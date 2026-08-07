@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>JobApply Assistant — Options</title>
+    <link rel="stylesheet" href="../ui/shared.css" />
+  </head>
+  <body class="options">
+    <div class="wrap">
+      <div class="row spread">
+        <h1>JobApply Assistant — Options</h1>
+        <span id="vaultBadge" class="badge">…</span>
+      </div>
+      <p class="muted">
+        Secrets are encrypted with your vault passphrase. Submission is never automated.
+      </p>
+      <div id="banner" class="banner info hidden"></div>
+
+      <div id="needUnlock" class="card hidden">
+        <h2>Unlock vault</h2>
+        <label class="field"
+          ><span>Passphrase</span>
+          <input type="password" id="unlockPass" autocomplete="current-password"
+        /></label>
+        <button type="button" class="primary" id="btnUnlock">Unlock</button>
+        <p class="muted small">Create the vault from the sidebar if you have not yet.</p>
+      </div>
+
+      <div id="opts" class="hidden stack">
+        <!-- Grok / xAI -->
+        <section class="card">
+          <div class="card-head"><h2>Grok / xAI (primary)</h2></div>
+          <p class="muted small">
+            Preferred path: official API at <span class="mono">api.x.ai</span>. On any failure
+            (rate limit, 404, network), the extension tries X session cookies next, then OpenAI.
+          </p>
+          <label class="field"
+            ><span>xAI API key</span>
+            <input type="password" id="xaiKey" placeholder="xai-… (stored encrypted)" autocomplete="off"
+          /></label>
+          <div class="row">
+            <button type="button" class="primary sm" id="btnSaveKey">Save key</button>
+            <button type="button" class="sm danger" id="btnClearKey">Clear key</button>
+            <span id="keyBadge" class="badge">…</span>
+          </div>
+          <label class="field" style="margin-top: 10px"
+            ><span>Grok model</span>
+            <select id="model">
+              <option value="grok-4-1-fast-reasoning">grok-4-1-fast-reasoning</option>
+              <option value="grok-4.5">grok-4.5</option>
+              <option value="grok-3">grok-3</option>
+              <option value="grok-3-mini">grok-3-mini</option>
+            </select>
+          </label>
+          <label class="field" style="flex-direction: row; align-items: center; gap: 8px"
+            ><input type="checkbox" id="combinePrompts" checked />
+            <span>Single-pass analyze (1 LLM call; uncheck for quality two-pass)</span>
+          </label>
+          <button type="button" class="sm" id="btnSaveModel">Save model settings</button>
+        </section>
+
+        <!-- OpenAI fallback -->
+        <section class="card">
+          <div class="card-head"><h2>OpenAI (automatic fallback)</h2></div>
+          <p class="muted small">
+            Used automatically whenever Grok (xAI API or X session) fails for any reason —
+            including the common “session API unavailable (404)”. Recommended for reliability.
+            Default model <span class="mono">gpt-4o-mini</span> is the freest widely available
+            OpenAI option for this workload. Key is encrypted in the vault.
+          </p>
+          <label class="field"
+            ><span>OpenAI API key</span>
+            <input type="password" id="openaiKey" placeholder="sk-… (stored encrypted)" autocomplete="off"
+          /></label>
+          <div class="row">
+            <button type="button" class="primary sm" id="btnSaveOpenaiKey">Save key</button>
+            <button type="button" class="sm danger" id="btnClearOpenaiKey">Clear key</button>
+            <span id="openaiKeyBadge" class="badge">…</span>
+          </div>
+          <label class="field" style="margin-top: 10px"
+            ><span>OpenAI model</span>
+            <select id="openaiModel">
+              <option value="gpt-4o-mini">gpt-4o-mini (recommended / freest)</option>
+              <option value="gpt-4.1-mini">gpt-4.1-mini</option>
+              <option value="gpt-4o">gpt-4o</option>
+              <option value="gpt-4.1">gpt-4.1</option>
+              <option value="o4-mini">o4-mini</option>
+            </select>
+          </label>
+          <button type="button" class="sm" id="btnSaveOpenaiModel" style="margin-top: 8px">
+            Save OpenAI model
+          </button>
+        </section>
+
+        <!-- Google Gemini free LLM backend -->
+        <section class="card">
+          <div class="card-head"><h2>Google Gemini (free LLM backend)</h2></div>
+          <p class="muted small">
+            Free tier API via Google AI Studio (<a href="https://aistudio.google.com/" target="_blank" rel="noopener">aistudio.google.com</a>).
+            Generous free rate limits for <span class="mono">gemini-2.0-flash</span> and <span class="mono">gemini-1.5-flash</span>.
+            Key is stored encrypted in your vault.
+          </p>
+          <label class="field"
+            ><span>Google Gemini API key</span>
+            <input type="password" id="geminiKey" placeholder="AIzaSy… (stored encrypted)" autocomplete="off"
+          /></label>
+          <div class="row">
+            <button type="button" class="primary sm" id="btnSaveGeminiKey">Save key</button>
+            <button type="button" class="sm danger" id="btnClearGeminiKey">Clear key</button>
+            <span id="geminiKeyBadge" class="badge">…</span>
+          </div>
+          <label class="field" style="margin-top: 10px"
+            ><span>Gemini model</span>
+            <select id="geminiModel">
+              <option value="gemini-2.0-flash">gemini-2.0-flash (free / fast / recommended)</option>
+              <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+              <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+            </select>
+          </label>
+          <button type="button" class="sm" id="btnSaveGeminiModel" style="margin-top: 8px">
+            Save Gemini model
+          </button>
+        </section>
+
+        <!-- Microsoft / GitHub Models free LLM backend -->
+        <section class="card">
+          <div class="card-head"><h2>Microsoft / GitHub Models (free LLM backend)</h2></div>
+          <p class="muted small">
+            Free LLM access via GitHub Personal Access Token or Azure OpenAI key.
+            GitHub Models provides free tier access to <span class="mono">gpt-4o-mini</span>, <span class="mono">Phi-4</span>, and more (<a href="https://github.com/marketplace/models" target="_blank" rel="noopener">github.com/marketplace/models</a>).
+            Key is stored encrypted in your vault.
+          </p>
+          <label class="field"
+            ><span>GitHub / Microsoft API key (PAT)</span>
+            <input type="password" id="msKey" placeholder="github_pat_… or Azure key (stored encrypted)" autocomplete="off"
+          /></label>
+          <label class="field" style="margin-top: 6px"
+            ><span>Endpoint (optional; default: GitHub Models)</span>
+            <input type="text" id="msEndpoint" placeholder="https://models.inference.ai.azure.com/chat/completions" autocomplete="off"
+          /></label>
+          <div class="row">
+            <button type="button" class="primary sm" id="btnSaveMsKey">Save key</button>
+            <button type="button" class="sm danger" id="btnClearMsKey">Clear key</button>
+            <span id="msKeyBadge" class="badge">…</span>
+          </div>
+          <label class="field" style="margin-top: 10px"
+            ><span>Microsoft / GitHub model</span>
+            <select id="msModel">
+              <option value="gpt-4o-mini">gpt-4o-mini (recommended)</option>
+              <option value="Phi-4">Phi-4</option>
+              <option value="Phi-3.5-mini-instruct">Phi-3.5-mini-instruct</option>
+              <option value="gpt-4o">gpt-4o</option>
+            </select>
+          </label>
+          <button type="button" class="sm" id="btnSaveMsModel" style="margin-top: 8px">
+            Save Microsoft model
+          </button>
+        </section>
+
+        <!-- X accounts -->
+        <section class="card">
+          <div class="card-head"><h2>X / Twitter account pool</h2></div>
+          <p class="muted small">
+            Grok session fallback when the xAI API is unavailable. Each account is uniquely keyed
+            by <strong>@username</strong> (resolved via verify_credentials). Re-importing the same
+            user updates cookies in place — no duplicates. Cookies are encrypted at rest.
+          </p>
+          <div class="row" style="margin-bottom: 8px">
+            <button type="button" class="sm primary" id="btnImportX">Import from browser</button>
+            <button type="button" class="sm" id="btnRefreshAccounts">Refresh</button>
+            <button type="button" class="sm" id="btnRekeyAccounts" title="Resolve @username and collapse duplicates">
+              Rekey by @username
+            </button>
+          </div>
+          <div class="grid-2">
+            <label class="field"><span>Label (optional)</span><input type="text" id="accLabel" placeholder="leave blank to use @username" /></label>
+            <label class="field"><span>User-Agent (optional)</span><input type="text" id="accUa" /></label>
+            <label class="field"><span>auth_token</span><input type="password" id="accAuth" autocomplete="off" /></label>
+            <label class="field"><span>ct0</span><input type="password" id="accCt0" autocomplete="off" /></label>
+          </div>
+          <button type="button" class="sm" id="btnAddAccount">Add account</button>
+          <ul id="accountList" class="list" style="margin-top: 10px"></ul>
+        </section>
+
+        <!-- Google -->
+        <section class="card">
+          <div class="card-head"><h2>Google Drive / Docs (read-only)</h2></div>
+          <p class="muted small">
+            <strong>Default:</strong> use your existing personal Google login in this Firefox
+            profile. Sign into <span class="mono">drive.google.com</span>, then Enable — no
+            Cloud project, no client ID, no extra config. Export is plain-text only; the
+            extension never writes Drive files or metadata.
+          </p>
+          <div class="row" style="margin-bottom: 10px">
+            <button type="button" class="sm primary" id="btnGoogleConnect">Enable Google</button>
+            <button type="button" class="sm danger" id="btnGoogleDisconnect">Disconnect</button>
+            <span id="googleBadge" class="badge">…</span>
+          </div>
+          <details>
+            <summary class="muted small" style="cursor: pointer">
+              Advanced: OAuth client ID (optional)
+            </summary>
+            <p class="muted small" style="margin-top: 8px">
+              Only needed if browser-session export fails. Scopes:
+              <span class="mono">drive.readonly</span> +
+              <span class="mono">documents.readonly</span>. Set the redirect URI to the value
+              below.
+            </p>
+            <label class="field"
+              ><span>OAuth Client ID</span>
+              <input type="text" id="googleClientId" placeholder="….apps.googleusercontent.com"
+            /></label>
+            <p class="mono small muted" id="redirectUrl">redirect: …</p>
+            <button type="button" class="sm" id="btnSaveGoogleClient">Save client id</button>
+          </details>
+        </section>
+
+        <!-- Profile -->
+        <section class="card">
+          <div class="card-head"><h2>Default profile</h2></div>
+          <p class="muted small">Also editable in the sidebar. Explicit profile data may be sent to Grok.</p>
+          <div class="grid-2">
+            <label class="field"><span>Full name</span><input type="text" id="pf_fullName" /></label>
+            <label class="field"><span>Email</span><input type="email" id="pf_email" /></label>
+            <label class="field"><span>Phone</span><input type="text" id="pf_phone" /></label>
+            <label class="field"><span>Location</span><input type="text" id="pf_location" /></label>
+            <label class="field"><span>LinkedIn</span><input type="url" id="pf_linkedin" /></label>
+            <label class="field"><span>GitHub</span><input type="url" id="pf_github" /></label>
+            <label class="field"><span>Website</span><input type="url" id="pf_website" /></label>
+            <label class="field"><span>City</span><input type="text" id="pf_city" /></label>
+            <label class="field"><span>State</span><input type="text" id="pf_state" /></label>
+            <label class="field"><span>Zip / Postal</span><input type="text" id="pf_zip" /></label>
+            <label class="field"><span>Country</span><input type="text" id="pf_country" /></label>
+          </div>
+          <label class="field"><span>Address</span><input type="text" id="pf_address" /></label>
+          <button type="button" class="sm primary" id="btnSaveProfile">Save profile</button>
+        </section>
+
+        <!-- Audit -->
+        <section class="card">
+          <div class="card-head"><h2>Audit trail</h2></div>
+          <p class="muted small">
+            Structured log of network operations (X, xAI, Google, OpenAI, Microsoft) and pipeline events. PII
+            values are not stored in request bodies — only byte sizes, status, purpose.
+          </p>
+          <div class="row" style="margin-bottom: 8px">
+            <label class="field" style="margin: 0; min-width: 140px"
+              ><span>Channel</span>
+              <select id="auditChannel">
+                <option value="">all</option>
+                <option value="x.com">x.com</option>
+                <option value="api.x.ai">api.x.ai</option>
+                <option value="api.openai.com">api.openai.com</option>
+                <option value="googleapis">googleapis / gemini</option>
+                <option value="models.inference.ai.azure.com">microsoft.com</option>
+                <option value="text.pollinations.ai">keyless.llm</option>
+                <option value="local">local</option>
+              </select>
+            </label>
+            <label class="field" style="margin: 0; min-width: 100px"
+              ><span>Retention (days)</span>
+              <input type="number" id="auditDays" min="0" value="90"
+            /></label>
+            <button type="button" class="sm" id="btnAuditRefresh">Refresh</button>
+            <button type="button" class="sm" id="btnAuditExport">Export JSONL</button>
+            <button type="button" class="sm danger" id="btnAuditClear">Clear</button>
+            <button type="button" class="sm" id="btnSaveRetention">Save retention</button>
+          </div>
+          <div class="table-scroll" style="max-height: 320px">
+            <table class="audit">
+              <thead>
+                <tr>
+                  <th>ts</th>
+                  <th>channel</th>
+                  <th>purpose</th>
+                  <th>method</th>
+                  <th>status</th>
+                  <th>note/error</th>
+                </tr>
+              </thead>
+              <tbody id="auditBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head"><h2>Session</h2></div>
+          <button type="button" class="sm danger" id="btnLock">Lock vault</button>
+        </section>
+      </div>
+    </div>
+    <script src="../ui/messaging.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>

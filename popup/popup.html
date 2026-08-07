@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>JobApply</title>
+    <link rel="stylesheet" href="../ui/shared.css" />
+  </head>
+  <body class="popup">
+    <div class="wrap">
+      <div class="row spread">
+        <h1>JobApply</h1>
+        <span id="badge" class="badge">…</span>
+      </div>
+      <p class="muted small" style="margin: 4px 0 10px">
+        Prep &amp; fill only — never auto-submits.
+      </p>
+      <div id="msg" class="banner info hidden"></div>
+
+      <div id="locked" class="stack hidden">
+        <label class="field"
+          ><span>Passphrase</span>
+          <input type="password" id="pass" autocomplete="current-password"
+        /></label>
+        <button type="button" class="primary" id="btnUnlock">Unlock</button>
+      </div>
+
+      <div id="open" class="stack hidden">
+        <div class="row">
+          <button type="button" class="sm primary" id="btnCapture">Capture JD</button>
+          <button type="button" class="sm" id="btnAnalyze">Analyze</button>
+          <button type="button" class="sm" id="btnFill">Fill form</button>
+        </div>
+        <div class="row">
+          <button type="button" class="sm" id="btnSidebar">Open sidebar</button>
+          <button type="button" class="sm ghost" id="btnOptions">Options</button>
+          <button type="button" class="sm ghost" id="btnLock">Lock</button>
+        </div>
+        <p id="hint" class="muted small"></p>
+      </div>
+    </div>
+    <script src="../ui/messaging.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>JobApply Assistant</title>
+    <link rel="stylesheet" href="../ui/shared.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="row spread">
+        <h1>JobApply Assistant</h1>
+        <span id="vaultBadge" class="badge">…</span>
+      </div>
+      <p class="muted small" style="margin-top: 0">
+        Automates prep &amp; form fill. <strong>Never auto-submits.</strong>
+      </p>
+
+      <div id="statusBanner" class="banner info hidden"></div>
+      <div id="errorBanner" class="banner danger hidden"></div>
+      <div id="piiBanner" class="banner warn hidden"></div>
+
+      <!-- LOCK / SETUP -->
+      <section id="secVault" class="card">
+        <div class="card-head"><h2>Vault</h2></div>
+        <div id="vaultSetup" class="hidden stack">
+          <p class="muted small">
+            Create a passphrase to encrypt X cookies, Google tokens, and API keys
+            at rest (AES-GCM). Min 8 characters.
+          </p>
+          <label class="field"
+            ><span class="req">Passphrase</span>
+            <input type="password" id="setupPass" autocomplete="new-password"
+          /></label>
+          <label class="field"
+            ><span class="req">Confirm</span>
+            <input type="password" id="setupPass2" autocomplete="new-password"
+          /></label>
+          <button type="button" class="primary" id="btnSetup">Create vault</button>
+        </div>
+        <div id="vaultUnlock" class="hidden stack">
+          <label class="field"
+            ><span>Passphrase</span>
+            <input type="password" id="unlockPass" autocomplete="current-password"
+          /></label>
+          <div class="row">
+            <button type="button" class="primary" id="btnUnlock">Unlock</button>
+            <button type="button" class="ghost sm" id="btnOpenOptionsLocked">Options</button>
+          </div>
+        </div>
+        <div id="vaultOpen" class="hidden row">
+          <span class="badge ok">Unlocked</span>
+          <button type="button" class="sm" id="btnLock">Lock</button>
+          <button type="button" class="ghost sm" id="btnOpenOptions">Options</button>
+        </div>
+      </section>
+
+      <div id="mainApp" class="hidden">
+        <div class="tabs" role="tablist">
+          <button type="button" class="active" data-tab="cv">CV</button>
+          <button type="button" data-tab="job">Job</button>
+          <button type="button" data-tab="result">Results</button>
+          <button type="button" data-tab="fill">Fill</button>
+        </div>
+
+        <!-- CV -->
+        <section id="tab-cv" class="tab-panel">
+          <div class="card">
+            <div class="card-head">
+              <h2>Curriculum vitae</h2>
+              <span id="cvMeta" class="badge">none</span>
+            </div>
+            <label class="field"
+              ><span>Paste CV text</span>
+              <textarea id="cvText" rows="10" placeholder="Paste your CV here…"></textarea>
+            </label>
+            <div class="row">
+              <button type="button" class="primary" id="btnSaveCv">Save CV</button>
+              <button type="button" class="sm" id="btnClearCv">Clear</button>
+            </div>
+            <hr class="hr" />
+            <h3>Google Drive (read-only)</h3>
+            <p class="muted small">
+              Uses your existing Google login in this Firefox profile — no Cloud project or client
+              ID. Read-only export only; never modifies Drive files or metadata.
+            </p>
+            <div class="row" style="margin-bottom: 8px">
+              <button type="button" class="sm" id="btnGoogleConnect">Enable Google</button>
+              <button type="button" class="sm" id="btnGoogleList">List Docs</button>
+              <button
+                type="button"
+                class="sm"
+                id="btnImportActiveDoc"
+                title="Import the Google Doc open in the active tab (read-only export)"
+              >
+                Import open Doc tab
+              </button>
+              <span id="googleBadge" class="badge">…</span>
+            </div>
+            <label class="field"
+              ><span>Or paste Google Docs URL</span>
+              <input type="url" id="docsUrl" placeholder="https://docs.google.com/document/d/…"
+            /></label>
+            <button type="button" class="sm" id="btnImportUrl">Import from URL</button>
+            <ul id="docsList" class="list" style="margin-top: 8px"></ul>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h2>Application profile</h2></div>
+            <p class="muted small">
+              Explicit profile data is allowed through the PII gate for Grok. Save before
+              analyzing.
+            </p>
+            <div class="grid-2">
+              <label class="field"><span>Full name</span><input type="text" id="pf_fullName" /></label>
+              <label class="field"><span>Email</span><input type="email" id="pf_email" /></label>
+              <label class="field"><span>Phone</span><input type="text" id="pf_phone" /></label>
+              <label class="field"><span>Location</span><input type="text" id="pf_location" /></label>
+              <label class="field"><span>LinkedIn</span><input type="url" id="pf_linkedin" /></label>
+              <label class="field"><span>GitHub</span><input type="url" id="pf_github" /></label>
+              <label class="field"><span>Website</span><input type="url" id="pf_website" /></label>
+              <label class="field"><span>City</span><input type="text" id="pf_city" /></label>
+              <label class="field"><span>State</span><input type="text" id="pf_state" /></label>
+              <label class="field"><span>Zip / Postal</span><input type="text" id="pf_zip" /></label>
+              <label class="field"><span>Country</span><input type="text" id="pf_country" /></label>
+            </div>
+            <label class="field"
+              ><span>Address</span><input type="text" id="pf_address"
+            /></label>
+            <button type="button" class="primary" id="btnSaveProfile">Save profile</button>
+          </div>
+        </section>
+
+        <!-- JOB -->
+        <section id="tab-job" class="tab-panel hidden">
+          <div class="card">
+            <div class="card-head"><h2>Job description</h2></div>
+            <div class="grid-2">
+              <label class="field"
+                ><span>Title</span><input type="text" id="jobTitle"
+              /></label>
+              <label class="field"
+                ><span>Company</span><input type="text" id="jobCompany"
+              /></label>
+            </div>
+            <label class="field"
+              ><span>Description</span>
+              <textarea
+                id="jdText"
+                rows="12"
+                placeholder="Capture from the active tab or paste the JD…"
+              ></textarea>
+            </label>
+            <div class="row">
+              <button type="button" class="primary" id="btnCaptureJd">Capture from tab</button>
+              <button type="button" class="sm" id="btnSaveJd">Save JD</button>
+              <button type="button" class="sm ghost" id="btnNewApp" title="Start a new job draft (global session)">
+                New job
+              </button>
+            </div>
+            <p class="muted small" style="margin-top: 6px">
+              One global draft for the whole browser session — same state in every window and
+              sidebar. Use <em>New job</em> when switching to a different posting.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-head"><h2>Analyze with Grok</h2></div>
+            <p class="muted small">
+              One combined call: distill CV for this JD, ATS keyword plan, rewrite cover
+              letter. Does not submit anything.
+            </p>
+            <div class="row">
+              <button type="button" class="primary" id="btnAnalyze">Run analyze</button>
+              <span id="analyzeStatus" class="badge">idle</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- RESULTS -->
+        <section id="tab-result" class="tab-panel hidden">
+          <div class="card">
+            <div class="card-head">
+              <h2>Cover letter</h2>
+              <span id="appStatus" class="badge">—</span>
+            </div>
+            <textarea id="coverLetter" rows="12" placeholder="Run analyze to generate…"></textarea>
+            <p class="muted small" style="margin-top: 6px">Edit freely before filling forms.</p>
+            <button type="button" class="sm" id="btnSaveCover">Save cover letter edits</button>
+          </div>
+          <div class="card">
+            <h2>Emphasis points</h2>
+            <ul id="emphasisList" class="list muted small"></ul>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h2>ATS-optimized resume text</h2>
+              <button type="button" class="sm ghost" id="btnCopyAtsResume" title="Copy to clipboard">
+                Copy
+              </button>
+            </div>
+            <p class="muted small">
+              Linear plain text for ATS paste fields — Grok-written objective &amp; summary,
+              JD-mirrored skills, relevance-ordered experience, no tables. Facts only from
+              your CV. Review before use.
+            </p>
+            <textarea
+              id="atsResumeText"
+              rows="10"
+              placeholder="Run analyze to generate…"
+              class="mono"
+            ></textarea>
+            <button type="button" class="sm" id="btnSaveAtsResume" style="margin-top: 6px">
+              Save resume text edits
+            </button>
+          </div>
+          <div class="card">
+            <h2>Objective</h2>
+            <div id="distilledObjective" class="pre">—</div>
+            <h3 style="margin-top: 10px">Distilled summary</h3>
+            <div id="distilledSummary" class="pre">—</div>
+            <h3 style="margin-top: 10px">ATS notes</h3>
+            <div id="atsNotes" class="pre">—</div>
+            <h3 style="margin-top: 10px">Keyword hits / gaps</h3>
+            <div id="atsKeywords" class="pre">—</div>
+            <h3 style="margin-top: 10px">Experience (structured)</h3>
+            <div id="expList" class="pre">—</div>
+          </div>
+        </section>
+
+        <!-- FILL -->
+        <section id="tab-fill" class="tab-panel hidden">
+          <div class="card">
+            <div class="card-head"><h2>Form fill</h2></div>
+            <p class="muted small">
+              Maps live page fields from profile + distilled CV. Empty when data is missing.
+              <strong>You</strong> click Submit on the site after review.
+            </p>
+            <div class="row">
+              <button type="button" class="sm" id="btnMapFields">Map fields</button>
+              <button type="button" class="primary" id="btnFillForm">Fill form</button>
+              <span id="fillStatus" class="badge">idle</span>
+            </div>
+            <div id="fieldMapPreview" class="table-scroll" style="margin-top: 10px">
+              <table class="audit">
+                <thead>
+                  <tr>
+                    <th>Label</th>
+                    <th>Value</th>
+                    <th>Src</th>
+                  </tr>
+                </thead>
+                <tbody id="fieldMapBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h2>Recent audit</h2>
+              <div class="row">
+                <select id="auditFilter" class="sm" title="Filter channel" style="max-width: 110px">
+                  <option value="">all</option>
+                  <option value="x.com">X / Twitter</option>
+                  <option value="api.x.ai">xAI</option>
+                  <option value="googleapis">Google</option>
+                  <option value="local">local</option>
+                </select>
+                <button type="button" class="sm ghost" id="btnRefreshAudit">Refresh</button>
+              </div>
+            </div>
+            <p class="muted small">
+              Structured log of network ops (including secondary webRequest capture for X). Full
+              export in Options.
+            </p>
+            <div class="table-scroll">
+              <table class="audit">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Ch</th>
+                    <th>Purpose</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="auditBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <p class="footer-note">
+        Personal info is never sent to Grok unless you put it in the profile, approve PII
+        prompts, or it appears only after you explicitly submit CV text for application use.
+        Full audit export lives in Options.
+      </p>
+    </div>
+    <script src="../ui/messaging.js"></script>
+    <script src="sidebar.js"></script>
+  </body>
+</html>

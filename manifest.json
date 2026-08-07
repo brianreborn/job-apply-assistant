@@ -1,0 +1,81 @@
+{
+  "manifest_version": 3,
+  "name": "JobApply Assistant",
+  "version": "0.5.0",
+  "description": "Automate job applications with Grok (OpenAI fallback): CV distill, ATS resume, cover letters, form fill — never auto-submit. Full X/Google audit trail.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "job-apply-assistant@local",
+      "strict_min_version": "115.0"
+    }
+  },
+  "icons": {
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png"
+  },
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "tabs",
+    "scripting",
+    "cookies",
+    "identity",
+    "webRequest",
+    "alarms",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://x.com/*",
+    "https://twitter.com/*",
+    "https://api.x.com/*",
+    "https://api.twitter.com/*",
+    "https://grok.x.com/*",
+    "https://api.x.ai/*",
+    "https://api.openai.com/*",
+    "https://www.googleapis.com/*",
+    "https://accounts.google.com/*",
+    "https://docs.google.com/*",
+    "https://drive.google.com/*",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "scripts": ["background/background.js"],
+    "type": "module"
+  },
+  "action": {
+    "default_title": "JobApply Assistant",
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "48": "icons/icon-48.png",
+      "96": "icons/icon-96.png"
+    }
+  },
+  "sidebar_action": {
+    "default_title": "JobApply Assistant",
+    "default_panel": "sidebar/sidebar.html",
+    "default_icon": {
+      "48": "icons/icon-48.png",
+      "96": "icons/icon-96.png"
+    }
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": [
+        "content/submit-guard.js",
+        "content/jd-extractor.js",
+        "content/form-scanner.js",
+        "content/form-filler.js",
+        "content/content.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "web_accessible_resources": []
+}
